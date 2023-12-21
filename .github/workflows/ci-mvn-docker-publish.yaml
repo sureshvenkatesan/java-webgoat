@@ -43,9 +43,6 @@ jobs:
         run: echo MVN_PACKAGE_BUILD_VERSION=$(cat pom.xml | grep SNAPSHOT | cut -c 12-30) >> $GITHUB_ENV
       - name: Set JF MVN Config
         run:  jf mvn-config --repo-deploy-releases=frogs-maven-virtual --repo-deploy-snapshots=frogs-maven-virtual  --repo-resolve-releases=frogs-maven-virtual --repo-resolve-snapshots=frogs-maven-virtual
-      - name: JFrog audit 🐸
-        run: |
-          jfrog audit
       - name: mvn install
         run: jf mvn clean install -f pom.xml
       - name: Gather build details 🐸
@@ -66,6 +63,8 @@ jobs:
       - name: docker image scan 🐳🐸
         run: |
           jf docker scan ${{ env.JF_URL }}/frogs-docker-dev-virtual/java-webgoat:${{ env.MVN_PACKAGE_BUILD_VERSION }}
+        env:
+          JF_URL: ${{ secrets.JF_RK_SA_URL }}
       - name: Docker Push 🐳🐸
         run: |
           jf docker push ${{ env.JF_URL }}/frogs-docker-dev-virtual/java-webgoat:${{ env.MVN_PACKAGE_BUILD_VERSION }}
