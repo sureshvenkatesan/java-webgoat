@@ -39,47 +39,41 @@ jobs:
         run: |
           jf rt ping
           jf config s
-      # - name: Capture previous build version
-      #   run: echo NPM_PACKAGE_BUILD_VERSION=$(cat package.json | jq -r ."version") >> $GITHUB_ENV
-      # - name: Set JF NPM Config
-      #   run:  jfrog npm-config --repo-deploy=frogs-npm-dev-virtual -repo-resolve=frogs-npm-dev-virtual 
-      # - name: Install dependencies
-      #   run: jfrog npm ci
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_RK_JRT_NPM_VIRTUAL_TOKEN }}
-      # - name: Gather build details 🐸
-      #   run: |
-      #     jfrog rt build-add-git
-      #     jfrog rt build-collect-env
-      # - name: JFrog audit 🐸
-      #   run: |
-      #     jfrog audit
-      # - name: NPM publish 🐸
-      #   run: jfrog npm publish
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_RK_JRT_NPM_VIRTUAL_TOKEN }}
-      # - name: Login to JFrog Docker repo
-      #   uses: docker/login-action@v2
-      #   with:
-      #     registry: https://${{ secrets.JF_RK_SA_URL }}
-      #     username: ${{ secrets.JF_RK_USERNAME }}
-      #     password: ${{ secrets.JF_RK_TOKEN }}
-      # - name: Docker Build 🐳🐸
-      #   run: |
-      #     jfrog docker image build --tag ${{ env.JF_URL }}/frogs-docker-dev-virtual/demo-node-app:${{ env.NPM_PACKAGE_BUILD_VERSION }} .
-      #   env:
-      #     JF_URL: ${{ secrets.JF_RK_SA_URL }}
-      # - name: docker image scan 🐳🐸
-      #   run: |
-      #     jfrog docker scan ${{ env.JF_URL }}/frogs-docker-dev-virtual/demo-node-app:${{ env.NPM_PACKAGE_BUILD_VERSION }}
-      # - name: Docker Push 🐳🐸
-      #   run: |
-      #     jfrog docker push ${{ env.JF_URL }}/frogs-docker-dev-virtual/demo-node-app:${{ env.NPM_PACKAGE_BUILD_VERSION }}
-      #   env:
-      #     JF_URL: ${{ secrets.JF_RK_SA_URL }}
-      # - name: JFrog build publish 🐸
-      #   run: jfrog rt build-publish
-      # - name: JFrog build scan 🐸
-      #   run: |
-      #     sleep 30
-      #     jfrog bs ${{ github.workflow }} ${{ github.run_number }} --vuln=true
+      - name: Capture build version
+        run: echo MVN_PACKAGE_BUILD_VERSION=$(cat pom.xml | grep SNAPSHOT | cut -c 12-30) >> $GITHUB_ENV
+      - name: Set JF MVN Config
+        run:  jf mvn-config --repo-deploy=frogs-maven-virtual -repo-resolve=frogs-maven-virtual
+      - name: JFrog audit 🐸
+        run: |
+          jfrog audit
+      - name: mvn install
+        run: jf mvn clean install -f pom.xml
+      - name: Gather build details 🐸
+        run: |
+          jf rt build-add-git
+          jf rt build-collect-env
+      - name: Login to JFrog Docker repo
+        uses: docker/login-action@v2
+        with:
+          registry: https://${{ secrets.JF_RK_SA_URL }}
+          username: ${{ secrets.JF_RK_USERNAME }}
+          password: ${{ secrets.JF_RK_TOKEN }}
+      - name: Docker Build 🐳🐸
+        run: |
+          jf docker image build --tag ${{ env.JF_URL }}/frogs-docker-dev-virtual/java-webgoat:${{ env.MVN_PACKAGE_BUILD_VERSION }} .
+        env:
+          JF_URL: ${{ secrets.JF_RK_SA_URL }}
+      - name: docker image scan 🐳🐸
+        run: |
+          jf docker scan ${{ env.JF_URL }}/frogs-docker-dev-virtual/java-webgoat:${{ env.MVN_PACKAGE_BUILD_VERSION }}
+      - name: Docker Push 🐳🐸
+        run: |
+          jf docker push ${{ env.JF_URL }}/frogs-docker-dev-virtual/java-webgoat:${{ env.MVN_PACKAGE_BUILD_VERSION }}
+        env:
+          JF_URL: ${{ secrets.JF_RK_SA_URL }}
+      - name: JFrog build publish 🐸
+        run: jf rt build-publish
+      - name: JFrog build scan 🐸
+        run: |
+          sleep 30
+          jf bs ${{ github.workflow }} ${{ github.run_number }} --vuln=true

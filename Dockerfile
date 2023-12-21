@@ -1,4 +1,4 @@
-FROM docker.io/eclipse-temurin:21.0.1_12-jre
+FROM roskad.jfrog.io/demonode-docker-virtual/eclipse-temurin:21.0.1_12-jre
 LABEL NAME = "WebGoat: A deliberately insecure Web Application"
 
 RUN \
