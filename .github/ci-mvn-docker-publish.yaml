@@ -1,4 +1,4 @@
-name: java-webgoat-mvn-docker-publish
+name: java-webgoat-mvn-docker-ci
 
 on:
   push:
