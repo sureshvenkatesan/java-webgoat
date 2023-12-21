@@ -1,0 +1,10 @@
+version: 1
+type: maven
+resolver:
+    serverId: roskad
+    snapshotRepo: frogs-maven-virtual
+    releaseRepo: frogs-maven-virtual
+deployer:
+    serverId: roskad
+    snapshotRepo: frogs-maven-virtual
+    releaseRepo: frogs-maven-virtual
