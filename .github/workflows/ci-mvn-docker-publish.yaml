@@ -42,7 +42,7 @@ jobs:
       - name: Capture build version
         run: echo MVN_PACKAGE_BUILD_VERSION=$(cat pom.xml | grep SNAPSHOT | cut -c 12-30) >> $GITHUB_ENV
       - name: Set JF MVN Config
-        run:  jf mvn-config --repo-deploy=frogs-maven-virtual -repo-resolve=frogs-maven-virtual
+        run:  jf mvn-config --repo-deploy-releases=frogs-maven-virtual --repo-deploy-snapshots=frogs-maven-virtual  --repo-resolve-releases=frogs-maven-virtual --repo-resolve-snapshots=frogs-maven-virtual
       - name: JFrog audit 🐸
         run: |
           jfrog audit
